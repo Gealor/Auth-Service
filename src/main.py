@@ -1,6 +1,15 @@
-def main():
-    print("Hello from auth-service!")
+from fastapi import FastAPI
+import uvicorn
 
+from core.config import settings
 
-if __name__ == "__main__":
-    main()
+app = FastAPI(title="Auth-Service")
+
+@app.get("/hello")
+async def hello():
+    return {
+        "msg": "Hello from FastAPI",
+    }
+
+if __name__=="__main__":
+    uvicorn.run("main:app", host = settings.runtime.host, port = settings.runtime.port)
