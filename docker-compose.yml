@@ -15,7 +15,7 @@ services:
     env_file:
       - ./src/docker.env
     ports:
-      - 700:5432
+      - 7000:5432
     volumes:
     - auth_bd_data:/var/lib/postgresql/data
     networks:
