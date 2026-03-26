@@ -42,6 +42,8 @@ class Settings(BaseSettings):
     )
 
     runtime: RuntimeSettings = RuntimeSettings()
-    database: DatabaseSettings = Field(default_factory=DatabaseSettings)
+    database: DatabaseSettings = Field(default_factory=DatabaseSettings) # при создании класса Settings, 
+    # доходя до поля database будет вызываться конструктор DatabaseSettings (не путать с такой инициализацией = DatabaseSettings(), так поле будет хранить объект, вычесленный не динамически, а при определении класса Settings, не создании экземпляра)
+    # и DatabaseSettings сам будет искать свои переменные ничего не зная о родительском классе Settings, который тоже ищет параметры в .env файлах
 
 settings = Settings()
