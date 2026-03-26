@@ -13,7 +13,15 @@ class RuntimeSettings(BaseModel):
     host: str = '0.0.0.0'
     port: int = 8000
 
-class DatabaseSettings(BaseModel):
+# Чтобы не указывать в .env параметры с начальным идентификатором, например, database как указано в Settings классе
+# явно наследуемся от BaseSettings, а не BaseModel и прописываем model_config
+class DatabaseSettings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=(ENV_TEMPLATE, ENV_FILE),
+        case_sensitive=False,
+        extra="ignore" # Игнорировать другие переменные в .env
+    )
+
     db_name: Annotated[str, Field(alias="POSTGRES_DB")]
     db_user: Annotated[str, Field(alias="POSTGRES_USER")]
     db_password: Annotated[str, Field(alias="POSTGRES_PASSWORD")]
@@ -30,9 +38,10 @@ class Settings(BaseSettings):
         env_file=(ENV_TEMPLATE, ENV_FILE),
         case_sensitive=False,
         env_nested_delimiter="__",
+        extra="ignore",
     )
 
     runtime: RuntimeSettings = RuntimeSettings()
-    database: DatabaseSettings
+    database: DatabaseSettings = Field(default_factory=DatabaseSettings)
 
 settings = Settings()
