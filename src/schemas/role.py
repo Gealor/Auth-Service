@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 # BusinessElement schemas
 class BusinessElementSchemaBase(BaseModel):
