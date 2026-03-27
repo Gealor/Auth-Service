@@ -17,6 +17,9 @@ class UserBase(BaseModel):
 class UserRegister(UserBase):
     email: EmailStr = Field(examples=["example@test.com"])
     password: str = Field(examples=["ivan_craft7869"])
+
+
+class UserRegisterWithRepeatPassword(UserRegister):
     repeat_password: str = Field(examples=["ivan_craft7869"])
 
 
