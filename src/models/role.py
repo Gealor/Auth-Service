@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from models.base import Base
@@ -42,3 +42,7 @@ class AccessRoleRule(Base, IdPrimaryKeyMixin):
 
     role: Mapped["Role"] = relationship(back_populates="rules")
     element: Mapped["BusinessElement"] = relationship()
+
+    __table_args__ = (
+        UniqueConstraint("role_id", "element_id", name = "uq_role_element"),
+    )
