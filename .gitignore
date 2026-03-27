@@ -10,3 +10,6 @@ wheels/
 .venv
 .env
 docker.env
+
+# Public and secrets key
+*.pem
