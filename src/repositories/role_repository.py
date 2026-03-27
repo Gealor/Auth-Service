@@ -1,10 +1,11 @@
 from sqlalchemy import delete, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
-from models.role import Role
+from models.role import AccessRoleRule, Role
 from schemas.exceptions.database import DatabaseException
-from schemas.role_schemas import RoleCreate, RoleRead, RoleUpdate
+from schemas.role_schemas import RoleCreate, RoleRead, RoleUpdate, RoleWithRules
 from core.logger import log
 
 class RoleRepository:
@@ -31,6 +32,21 @@ class RoleRepository:
 
         return RoleRead.model_validate(role)
     
+
+    async def get_role_with_access_rules_by_id(self, role_id: int) -> RoleWithRules | None:
+        stmt = (
+            select(Role)
+            .options(
+                selectinload(Role.rules).joinedload(AccessRoleRule.element)
+            ).where(Role.id == role_id)
+        )
+
+        result = self.db_session.scalar(stmt)
+        if result is None:
+            return None
+        
+        return RoleWithRules.model_validate(result)
+
 
     async def create_role(self, role_data: RoleCreate):
         role = Role(

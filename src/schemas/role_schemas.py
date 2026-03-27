@@ -33,6 +33,34 @@ class AccessRoleRuleSchemaBase(BaseModel):
     delete_permission: bool = Field(default=False)
     delete_all_permission: bool = Field(default=False)
 
+
+class AccessRoleRuleRead(AccessRoleRuleSchemaBase):
+    id: int = Field(examples=[1, 2, 3])
+    element: BusinessElementSchemaWithID
+
+
+class AccessRoleRuleCreate(AccessRoleRuleSchemaBase):
+    pass
+
+
+class AccessRoleRuleUpdate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    # Чтение
+    read_permission: bool | None = None
+    read_all_permission: bool | None = None
+    
+    # Создание
+    create_permission: bool | None = None
+    
+    # Обновление
+    update_permission: bool | None = None
+    update_all_permission: bool | None = None
+    
+    # Удаление
+    delete_permission: bool | None = None
+    delete_all_permission: bool | None = None
+
 # Role schemas
 class RoleBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -53,4 +81,4 @@ class RoleUpdate(RoleBase):
 
 
 class RoleWithRules(RoleBase):
-    rules: list[AccessRoleRuleSchemaBase]
+    rules: list[AccessRoleRuleRead]
