@@ -37,12 +37,19 @@ class AccessRoleRuleSchemaBase(BaseModel):
 class RoleBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: int = Field(examples=[1, 2, 3])
     name: str = Field(examples=["superadmin", "admin", "user"])
+
+
+class RoleRead(RoleBase):
+    id: int = Field(examples=[1, 2, 3])
 
 
 class RoleCreate(RoleBase):
     pass
+
+
+class RoleUpdate(RoleBase):
+    name: str | None = None
 
 
 class RoleWithRules(RoleBase):
