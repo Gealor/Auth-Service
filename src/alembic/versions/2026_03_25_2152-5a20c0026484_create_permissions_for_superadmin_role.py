@@ -10,10 +10,6 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 
-from models import BusinessElement
-from models import Role
-from models import AccessRoleRule
-
 
 # revision identifiers, used by Alembic.
 revision: str = '5a20c0026484'
