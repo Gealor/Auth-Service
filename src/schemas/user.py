@@ -1,0 +1,26 @@
+from typing import TYPE_CHECKING
+
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
+
+if TYPE_CHECKING:
+    from schemas.role import RoleWithRules
+
+
+class UserBase(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    first_name: str = Field(examples=["Иван"])
+    last_name: str = Field(examples=["Фамилия"])
+    patronymic: str = Field(examples=["Иванов"])
+
+
+class UserRegister(UserBase):
+    email: EmailStr = Field(examples=["example@test.com"])
+    password: str = Field(examples=["ivan_craft7869"])
+    repeat_password: str = Field(examples=["ivan_craft7869"])
+
+
+class UserInfoForAdmin(UserRegister):
+    is_active: bool = Field(examples=[True, False])
+
+    role: "RoleWithRules"
