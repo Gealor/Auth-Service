@@ -26,19 +26,19 @@ class AccessRoleRule(Base, IdPrimaryKeyMixin):
     element_id: Mapped[int] = mapped_column(ForeignKey('business_elements.id', ondelete='CASCADE'))
     
     # Чтение
-    read_permission: Mapped[bool] = mapped_column(default=False)
-    read_all_permission: Mapped[bool] = mapped_column(default=False)
+    read_permission: Mapped[bool] = mapped_column(default=False, server_default="true")
+    read_all_permission: Mapped[bool] = mapped_column(default=False, server_default="true")
     
     # Создание
-    create_permission: Mapped[bool] = mapped_column(default=False)
+    create_permission: Mapped[bool] = mapped_column(default=False, server_default="false")
     
     # Обновление
-    update_permission: Mapped[bool] = mapped_column(default=False)
-    update_all_permission: Mapped[bool] = mapped_column(default=False)
+    update_permission: Mapped[bool] = mapped_column(default=False, server_default="false")
+    update_all_permission: Mapped[bool] = mapped_column(default=False, server_default="false")
     
     # Удаление
-    delete_permission: Mapped[bool] = mapped_column(default=False)
-    delete_all_permission: Mapped[bool] = mapped_column(default=False)
+    delete_permission: Mapped[bool] = mapped_column(default=False, server_default="false")
+    delete_all_permission: Mapped[bool] = mapped_column(default=False, server_default="false")
 
     role: Mapped["Role"] = relationship(back_populates="rules")
     element: Mapped["BusinessElement"] = relationship()
