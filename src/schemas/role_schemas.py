@@ -7,8 +7,16 @@ class BusinessElementSchemaBase(BaseModel):
     name: str = Field(examples=["role", "user", "rule"])
 
 
-class BusinessElementSchemaWithID(BusinessElementSchemaBase):
+class BusinessElementRead(BusinessElementSchemaBase):
     id: int = Field(examples=[1, 2, 3])
+
+
+class BusinessElementCreate(BusinessElementSchemaBase):
+    pass
+
+
+class BusinessElementUpdate(BusinessElementSchemaBase):
+    name: str | None = None
 
 
 # AccessRoleRule schemas
@@ -36,7 +44,7 @@ class AccessRoleRuleSchemaBase(BaseModel):
 
 class AccessRoleRuleRead(AccessRoleRuleSchemaBase):
     id: int = Field(examples=[1, 2, 3])
-    element: BusinessElementSchemaWithID
+    element: BusinessElementRead
 
 
 class AccessRoleRuleCreate(AccessRoleRuleSchemaBase):
