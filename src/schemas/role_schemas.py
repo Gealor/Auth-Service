@@ -41,5 +41,9 @@ class RoleBase(BaseModel):
     name: str = Field(examples=["superadmin", "admin", "user"])
 
 
+class RoleCreate(RoleBase):
+    pass
+
+
 class RoleWithRules(RoleBase):
     rules: list[AccessRoleRuleSchemaBase]
