@@ -5,6 +5,7 @@ from schemas.exceptions.database import DatabaseException
 from schemas.exceptions.roles import RoleNotFoundException
 from schemas.exceptions.security import PasswordsNotMatchException, UserEmailAlreadyExistsException, UserNotActiveException
 from schemas.exceptions.users import UserNotFoundException
+from schemas.response_schemas import ResponseSchema
 from schemas.user_schemas import LoginCredentials, TokensResponse, UserRegisterWithRepeatPassword
 from services.auth_service import AuthService
 
@@ -16,7 +17,7 @@ router = APIRouter(prefix="/auth", tags=["JWT"])
 async def create_user(
     user_data: UserRegisterWithRepeatPassword,
     db = Depends(db_session_getter),
-):
+) -> ResponseSchema:
     try:
         result = await AuthService(db_session=db).register_user(user_data)
     except PasswordsNotMatchException:
