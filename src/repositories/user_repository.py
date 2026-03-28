@@ -2,10 +2,12 @@ from sqlalchemy import delete, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 import bcrypt
+from sqlalchemy.orm import joinedload
 
+from models.role import Role
 from models.user import User
 from schemas.exceptions.database import DatabaseException
-from schemas.user_schemas import UserDelete, UserRead, UserRegister, UserUpdate
+from schemas.user_schemas import UserDelete, UserInfoForAdmin, UserRead, UserRegister, UserUpdate
 from core.logger import log
 
 class UserRepository:
@@ -31,7 +33,21 @@ class UserRepository:
         
         return UserRead.model_validate(user)
 
+
+    async def get_user_with_role(self, user_id: int) -> UserInfoForAdmin | None:
+        stmt = (
+            select(User)
+            .options(joinedload(User.role).selectinload(Role.rules))
+            .where(User.id == user_id)
+        )
+
+        user = await self.db_session.scalar(stmt)
+        if user is None:
+            return None
+        
+        return UserInfoForAdmin.model_validate(user)
     
+
     async def create_user(self, user_data: UserRegister, base_role_id: int):
         user = User(
             first_name = user_data.first_name,
