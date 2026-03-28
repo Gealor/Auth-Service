@@ -23,7 +23,7 @@ def upgrade() -> None:
     conn = op.get_bind()
 
     res = conn.execute(
-        sa.text("INSERT INTO roles (name) VALUES ('base') RETURNING id")
+        sa.text("INSERT INTO roles (name) VALUES ('user') RETURNING id")
     )
     role_id = res.scalar()
     
