@@ -52,6 +52,13 @@ class UserInfoForAdmin(UserRegister):
     role: "RoleWithRules"
 
 
+# Auth
 class LoginCredentials(BaseModel):
     email: EmailStr = Field(examples=["example@test.com"])
     password: str = Field(examples=["ivan_craft7869"])
+
+
+class TokensResponse(BaseModel):
+    access_token: str = Field(examples=["eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30"])
+    refresh_token: str = Field(examples=["eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30"])
+    token_type: str = "bearer"
