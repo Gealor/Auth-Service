@@ -11,3 +11,8 @@ class PasswordsNotMatchException(SecurityAuthBaseException):
 
 class UserEmailAlreadyExistsException(SecurityAuthBaseException):
     pass
+
+
+class UserNotActiveException(SecurityAuthBaseException):
+    pass
+
