@@ -68,7 +68,7 @@ class PermissionChecker:
     async def __call__(
         self, 
         current_user: UserInfoForAdmin = Depends(get_current_user)
-    ):
+    ) -> AccessRoleRuleRead:
         # Правило для конкретного бизнес-модуля
         target_rule = self._found_target_rule(current_user)
 
@@ -81,7 +81,7 @@ class PermissionChecker:
         all_perm = getattr(target_rule, f"{self.action}_all_permission", False)
 
         if not (base_perm or all_perm):
-            log.error("Not found '%s' permission for role %s", self.action, current_user.role)
+            log.error("Not found '%s' permission for role %s", self.action, current_user.role.name)
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Action forbidden")
 
         return target_rule

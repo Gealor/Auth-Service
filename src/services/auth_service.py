@@ -75,6 +75,8 @@ class AuthService:
 
         access_token = create_access_token(user_info)
         log.info("Access token created.")
+        # TODO: сохранять refresh токен в таблицу базы данных, при /refresh пересоздавать access и refresh токены, 
+        # а refresh_token перезаписывать в бд для соответствующего id аккаунта
         refresh_token = create_refresh_token(user_info)
         log.info("Refresh token created.")
 

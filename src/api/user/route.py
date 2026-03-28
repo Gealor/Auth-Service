@@ -3,15 +3,32 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from core.auth.security import PermissionChecker, get_current_user
 from core.database import db_session_getter
 from schemas.response_schemas import ResponseSchema
+from schemas.role_schemas import AccessRoleRuleRead
 from schemas.user_schemas import UserInfoForAdmin
+from services.user_service import UserService
 
 
 router = APIRouter(prefix="/user", tags=["JWT"])
 
+@router.get("/me")
+async def read_me(
+    current_user: UserInfoForAdmin = Depends(get_current_user),
+    rule: AccessRoleRuleRead = Depends(PermissionChecker("users", "read")),
+) -> UserInfoForAdmin:
+    return current_user
+
 @router.delete("/delete/me")
 async def delete_my_account(
     current_user: UserInfoForAdmin = Depends(get_current_user),
-    rule = Depends(PermissionChecker("users", "delete")),
+    rule: AccessRoleRuleRead = Depends(PermissionChecker("users", "delete")),
     db = Depends(db_session_getter),
-) -> ResponseSchema: 
-    return ResponseSchema(msg = "Success delete")
+) -> ResponseSchema:
+    try:
+        result = await UserService(db_session=db).delete_self_user(user_id=current_user.id)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="Unexpected error"
+        )
+    
+    return result
