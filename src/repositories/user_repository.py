@@ -35,7 +35,7 @@ class UserRepository:
         return UserRead.model_validate(user)
 
 
-    async def get_user_with_role(self, user_id: int) -> UserInfoForAdmin | None:
+    async def get_user_with_role(self, user_id: int) -> UserInfoForAdmin:
         stmt = (
             select(User)
             .options(joinedload(User.role).selectinload(Role.rules))
@@ -43,9 +43,6 @@ class UserRepository:
         )
 
         user = await self.db_session.scalar(stmt)
-        if user is None:
-            return None
-        
         return UserInfoForAdmin.model_validate(user)
     
 
