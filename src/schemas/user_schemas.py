@@ -15,13 +15,14 @@ class UserBase(BaseModel):
     patronymic: str = Field(examples=["Иванов"])
 
 
-class UserRead(BaseModel):
+class UserRead(UserBase):
     id: int
 
 
-class UserRegister(UserBase):
+class UserRegister(UserRead):
     email: EmailStr = Field(examples=["example@test.com"])
     password: str = Field(examples=["ivan_craft7869"])
+    is_active: bool
 
 
 class UserRegisterWithRepeatPassword(UserRegister):
