@@ -26,7 +26,7 @@ class UserRepository:
         return UserRegister.model_validate(user)
     
     async def get_user_by_id(self, user_id: int) -> UserRead | None:
-        stmt = select(User).where(User.id == user_id)
+        stmt = select(User).options(joinedload(User.role)).where(User.id == user_id)
 
         user = await self.db_session.scalar(stmt)
         if user is None:

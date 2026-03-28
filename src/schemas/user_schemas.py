@@ -15,12 +15,12 @@ class UserBase(BaseModel):
 
 class UserRead(UserBase):
     id: int
+    is_active: bool
 
 
 class UserRegister(UserRead):
     email: EmailStr = Field(examples=["example@test.com"])
     password: str = Field(examples=["ivan_craft7869"])
-    is_active: bool
 
 
 class UserRegisterWithRepeatPassword(UserRegister):
