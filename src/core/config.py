@@ -14,6 +14,7 @@ ENV_TEMPLATE = BASE_DIR / ".env.template"
 class RuntimeSettings(BaseModel):
     host: str = '0.0.0.0'
     port: int = 8000
+    reload: bool = True
 
 class LoggerSettings(BaseModel):
     LOG_DEFAULT_FORMAT: str = (
