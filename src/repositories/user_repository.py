@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import bcrypt
 from sqlalchemy.orm import joinedload
 
-from models.role import Role
+from models.role import AccessRoleRule, Role
 from models.user import User
 from schemas.exceptions.database import DatabaseException
 from schemas.user_schemas import UserDelete, UserInfoForAdmin, UserRead, UserRegister, UserUpdate
@@ -38,7 +38,7 @@ class UserRepository:
     async def get_user_with_role(self, user_id: int) -> UserInfoForAdmin:
         stmt = (
             select(User)
-            .options(joinedload(User.role).selectinload(Role.rules))
+            .options(joinedload(User.role).selectinload(Role.rules).selectinload(AccessRoleRule.element))
             .where(User.id == user_id)
         )
 

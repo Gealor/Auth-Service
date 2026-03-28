@@ -1,10 +1,8 @@
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
-if TYPE_CHECKING:
-    from schemas.role_schemas import RoleWithRules
+from schemas.role_schemas import RoleWithRules
 
 
 class UserBase(BaseModel):
@@ -49,7 +47,7 @@ class UserInfoForAdmin(UserRegister):
     is_active: bool = Field(examples=[True, False])
 
     id: int
-    role: "RoleWithRules"
+    role: RoleWithRules
 
 
 # Auth
