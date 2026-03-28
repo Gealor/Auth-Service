@@ -5,7 +5,7 @@ import bcrypt
 
 from models.user import User
 from schemas.exceptions.database import DatabaseException
-from schemas.user_schemas import UserRead, UserRegister, UserUpdate
+from schemas.user_schemas import UserDelete, UserRead, UserRegister, UserUpdate
 from core.logger import log
 
 class UserRepository:
@@ -76,8 +76,12 @@ class UserRepository:
         return UserRead.model_validate(user)
 
     async def delete_user(self, user_id: int):
-        stmt = delete(User).where(User.id == user_id)
+        delete_info = UserDelete()
+        dict_data = delete_info.model_dump()
 
+        stmt = (
+            update(User).values(**dict_data).where(User.id == user_id)
+        )
         await self.db_session.execute(stmt)
         try:
             await self.db_session.commit()

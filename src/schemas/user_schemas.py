@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
@@ -31,6 +32,13 @@ class UserUpdate(UserRegister):
     first_name: str | None = None
     last_name: str | None = None
     patronymic: str | None = None
+
+
+class UserDelete(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    is_active: bool = False
+    deleted_at: datetime = Field(default_factory=lambda: datetime.now(tz = UTC).replace(tzinfo=None))
 
 
 class UserChangePassword(BaseModel):
