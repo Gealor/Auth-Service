@@ -9,7 +9,7 @@ from core.auth.passwords import hash_password
 from models.role import AccessRoleRule, Role
 from models.user import User
 from schemas.exceptions.database import DatabaseException
-from schemas.user_schemas import UserDelete, UserInfoForAdmin, UserRead, UserRegister, UserUpdate
+from schemas.user_schemas import UserDelete, UserInfoForAdmin, UserRead, UserRegister, UserUpdate, UserWithWorkInformation
 from core.logger import log
 
 class UserRepository:
@@ -26,7 +26,7 @@ class UserRepository:
             )
         )
 
-    async def get_user_by_email(self, email: str | EmailStr, exclude_inactive: bool = False) -> UserRegister | None:
+    async def get_user_by_email(self, email: str | EmailStr, exclude_inactive: bool = False) -> UserWithWorkInformation | None:
         stmt = select(User).where(User.email == email)
         if exclude_inactive:
             stmt = self._exclude_deleted_or_not_active(stmt)
@@ -35,7 +35,7 @@ class UserRepository:
         if user is None:
             return None
         
-        return UserRegister.model_validate(user)
+        return UserWithWorkInformation.model_validate(user)
     
     async def get_user_by_id(self, user_id: int, exclude_inactive: bool = False) -> UserRead | None:
         stmt = select(User).options(joinedload(User.role)).where(User.id == user_id)

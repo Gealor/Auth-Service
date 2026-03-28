@@ -18,13 +18,17 @@ class UserRead(UserBase):
     is_active: bool
 
 
-class UserRegister(UserRead):
+class UserRegister(UserBase):
     email: EmailStr = Field(examples=["example@test.com"])
-    password: str = Field(examples=["ivan_craft7869"])
+    password: str = Field(min_length=8, examples=["ivan_craft7869"])
 
 
 class UserRegisterWithRepeatPassword(UserRegister):
     repeat_password: str = Field(examples=["ivan_craft7869"])
+
+
+class UserWithWorkInformation(UserRead, UserRegister):
+    pass
 
 
 class UserUpdate(UserRegister):
