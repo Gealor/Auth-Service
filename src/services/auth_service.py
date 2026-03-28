@@ -8,6 +8,7 @@ from repositories.user_repository import UserRepository
 from schemas.exceptions.roles import RoleNotFoundException
 from schemas.exceptions.security import PasswordsNotMatchException, UserEmailAlreadyExistsException, UserNotActiveException
 from schemas.exceptions.users import UserNotFoundException
+from schemas.response_schemas import ResponseSchema
 from schemas.user_schemas import TokensResponse, UserRegister, UserRegisterWithRepeatPassword
 
 
@@ -18,7 +19,7 @@ class AuthService:
     async def register_user(
         self,
         user_data: UserRegisterWithRepeatPassword,
-    ):
+    ) -> ResponseSchema:
         if user_data.password != user_data.repeat_password:
             log.error(
                 "Password and repeat password do not match: %s != %s",
@@ -47,9 +48,7 @@ class AuthService:
             base_role_id = role.id,
         )
 
-        return {
-            "msg": "Succesful registration. Now you can log in."
-        }
+        return ResponseSchema(msg = "Succesful registration. Now you can log in.")
     
 
     async def login_user(self, email: EmailStr, password: str) -> TokensResponse:
