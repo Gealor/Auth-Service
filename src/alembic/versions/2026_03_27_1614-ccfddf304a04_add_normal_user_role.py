@@ -41,7 +41,7 @@ def upgrade() -> None:
             delete_permission, delete_all_permission
         ) VALUES (
             :role_id, :element_id, 
-            true, true, false, false, false, false, false
+            true, true, false, true, false, true, false
         )
     """)
     conn.execute(
@@ -51,6 +51,15 @@ def upgrade() -> None:
 def downgrade() -> None:
     """Downgrade schema."""
     conn = op.get_bind()
+
+    role_id = conn.scalar(
+        sa.text("SELECT id FROM roles WHERE name='user'")
+    )
+
+    conn.execute(
+        sa.text("DELETE FROM users WHERE users.role_id = :role_id"),
+        {"role_id": role_id},
+    )
 
     res = conn.execute(
         sa.text("DELETE FROM roles WHERE name='user' RETURNING id")
