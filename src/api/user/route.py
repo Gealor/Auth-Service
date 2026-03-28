@@ -5,7 +5,7 @@ from core.database import db_session_getter
 from schemas.exceptions.users import UserNotDeletedException, UserNotFoundException
 from schemas.response_schemas import ResponseSchema
 from schemas.role_schemas import AccessRoleRuleRead
-from schemas.user_schemas import UserInfoForAdmin
+from schemas.user_schemas import UserInfoForAdmin, UserRead, UserUpdate
 from services.user_service import UserService
 
 
@@ -17,6 +17,31 @@ async def read_me(
     rule: AccessRoleRuleRead = Depends(PermissionChecker("users", "read")),
 ) -> UserInfoForAdmin:
     return current_user
+
+@router.patch("/update/me")
+async def update_my_profile(
+    update_data: UserUpdate,
+    current_user: UserInfoForAdmin = Depends(get_current_user),
+    rule: AccessRoleRuleRead = Depends(PermissionChecker("users", "update")),
+    db = Depends(db_session_getter),
+) -> UserRead:
+    try:
+        result = await UserService(db_session=db).update_user(
+            user_id=current_user.id,
+            update_data=update_data
+        )
+    except UserNotFoundException:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="Unexpected error"
+        )
+    
+    return result
 
 @router.delete("/delete/me")
 async def delete_my_account(
@@ -43,7 +68,7 @@ async def restore_user(
         result = await UserService(db_session=db).restore_deleted_user(user_id=user_id)
     except UserNotFoundException:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, 
+            status_code=status.HTTP_404_NOT_FOUND, 
             detail="User not found"
         )
     except UserNotDeletedException:

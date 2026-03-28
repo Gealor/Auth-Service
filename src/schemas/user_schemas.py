@@ -33,7 +33,7 @@ class UserWithWorkInformation(UserRead, UserRegister):
     pass
 
 
-class UserUpdate(UserRegister):
+class UserUpdate(UserBase):
     first_name: str | None = None
     last_name: str | None = None
     patronymic: str | None = None
