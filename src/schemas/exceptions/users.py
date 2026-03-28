@@ -7,3 +7,7 @@ class BaseUserException(AppBaseException):
 
 class UserNotFoundException(BaseUserException):
     pass
+
+
+class UserNotDeletedException(BaseUserException):
+    pass

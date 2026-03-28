@@ -16,6 +16,8 @@ class UserBase(BaseModel):
 class UserRead(UserBase):
     id: int
     is_active: bool
+    deleted_at: datetime | None
+    banned_at: datetime | None
 
 
 class UserRegister(UserBase):
@@ -41,7 +43,7 @@ class UserDelete(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     is_active: bool = False
-    deleted_at: datetime = Field(default_factory=lambda: datetime.now(tz = UTC).replace(tzinfo=None))
+    deleted_at: datetime | None = Field(default_factory=lambda: datetime.now(tz = UTC).replace(tzinfo=None))
 
 
 class UserChangePassword(BaseModel):

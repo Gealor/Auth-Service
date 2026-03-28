@@ -1,3 +1,5 @@
+from typing import Any
+
 from pydantic import EmailStr
 from sqlalchemy import Select, Update, and_, delete, select, update
 from sqlalchemy.exc import IntegrityError
@@ -83,9 +85,13 @@ class UserRepository:
         await self.db_session.refresh(user)
         log.info("Create new user with id=%d", user.id)
 
-    async def update_user(self, user_id: int, update_data: UserUpdate, exclude_inactive: bool = False) -> UserRead:
-        dict_data = update_data.model_dump(exclude_none=True)
 
+    async def _update_data_by_dict(
+        self,
+        user_id: int,
+        dict_data: dict[str, Any],
+        exclude_inactive: bool = False,
+    ) -> User:
         stmt = (
             update(User).values(**dict_data)
             .where(User.id==user_id)
@@ -102,6 +108,17 @@ class UserRepository:
             raise DatabaseException
         
         await self.db_session.refresh(user)
+        return user
+
+
+    async def update_user(self, user_id: int, update_data: UserUpdate, exclude_inactive: bool = False) -> UserRead:
+        dict_data = update_data.model_dump(exclude_none=True)
+
+        user = await self._update_data_by_dict(
+            user_id=user_id,
+            dict_data=dict_data,
+            exclude_inactive=exclude_inactive,
+        )
         log.info("Update user with id=%d", user_id)
         return UserRead.model_validate(user)
 
@@ -109,15 +126,18 @@ class UserRepository:
         delete_info = UserDelete()
         dict_data = delete_info.model_dump()
 
-        stmt = (
-            update(User).values(**dict_data).where(User.id == user_id)
+        await self._update_data_by_dict(
+            user_id=user_id,
+            dict_data=dict_data,
         )
-        await self.db_session.execute(stmt)
-        try:
-            await self.db_session.commit()
-        except IntegrityError as e:
-            log.error("Failed to delete user: %s", e)
-            raise DatabaseException
-        
         log.info("Deleted user with id=%d", user_id)
     
+    async def restore_user(self, user_id: int):
+        update_data = UserDelete(is_active=True, deleted_at=None)
+        dict_data = update_data.model_dump()
+
+        await self._update_data_by_dict(
+            user_id=user_id,
+            dict_data=dict_data,
+        )
+        log.info("User restored with id=%d", user_id)
