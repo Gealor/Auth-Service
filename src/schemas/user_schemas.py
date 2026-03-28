@@ -49,3 +49,8 @@ class UserInfoForAdmin(UserRegister):
 
     id: int
     role: "RoleWithRules"
+
+
+class LoginCredentials(BaseModel):
+    email: EmailStr = Field(examples=["example@test.com"])
+    password: str = Field(examples=["ivan_craft7869"])

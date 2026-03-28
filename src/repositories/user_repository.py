@@ -1,3 +1,4 @@
+from pydantic import EmailStr
 from sqlalchemy import delete, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,7 +16,7 @@ class UserRepository:
         self.db_session = db_session
 
     
-    async def get_user_by_email(self, email: str) -> UserRegister | None:
+    async def get_user_by_email(self, email: str | EmailStr) -> UserRegister | None:
         stmt = select(User).where(User.email == email)
 
         user = await self.db_session.scalar(stmt)
