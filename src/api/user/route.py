@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from core.auth.security import PermissionChecker, get_current_user
 from core.database import db_session_getter
+from schemas.exceptions.users import UserNotDeletedException, UserNotFoundException
 from schemas.response_schemas import ResponseSchema
 from schemas.role_schemas import AccessRoleRuleRead
 from schemas.user_schemas import UserInfoForAdmin
@@ -25,6 +26,31 @@ async def delete_my_account(
 ) -> ResponseSchema:
     try:
         result = await UserService(db_session=db).delete_self_user(user_id=current_user.id)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="Unexpected error"
+        )
+    
+    return result
+
+@router.patch("/restore")
+async def restore_user(
+    user_id: int,
+    db = Depends(db_session_getter)
+) -> ResponseSchema:
+    try:
+        result = await UserService(db_session=db).restore_deleted_user(user_id=user_id)
+    except UserNotFoundException:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="User not found"
+        )
+    except UserNotDeletedException:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="User not deleted"
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 

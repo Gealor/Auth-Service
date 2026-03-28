@@ -45,6 +45,7 @@ async def get_current_user(
     user = await UserRepository(db_session=db).get_user_with_role(user_id=user_id)
 
     if not user or not user.is_active:
+        log.error("User with id=%d is not active or not exist", user_id)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
             detail="The user was not found or deleted"
