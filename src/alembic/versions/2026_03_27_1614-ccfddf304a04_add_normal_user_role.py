@@ -53,7 +53,7 @@ def downgrade() -> None:
     conn = op.get_bind()
 
     res = conn.execute(
-        sa.text("DELETE FROM roles WHERE name='base' RETURNING id")
+        sa.text("DELETE FROM roles WHERE name='user' RETURNING id")
     )
     role_id = res.scalar()
 
