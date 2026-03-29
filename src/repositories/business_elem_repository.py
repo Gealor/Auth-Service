@@ -5,12 +5,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from models.role import BusinessElement
 from schemas.exceptions.database import DatabaseException
 from core.logger import log
-from schemas.role_schemas import BusinessElementCreate, BusinessElementRead, BusinessElementUpdate
+from schemas.role_schemas import BusinessElementCreate, BusinessElementRead, BusinessElementUpdate, ListBusinessElementsRead
 
 class BusinessElementsRepository:
     def __init__(self, db_session: AsyncSession):
         self.db_session = db_session
 
+
+    async def get_all_elements(self) -> ListBusinessElementsRead:
+        stmt = select(BusinessElement).order_by(BusinessElement.id)
+        result = (await self.db_session.scalars(stmt)).all()
+    
+        return ListBusinessElementsRead(
+            elements=[BusinessElementRead.model_validate(elem) for elem in result]
+        )
     
     async def get_element_by_id(self, elem_id: int) -> BusinessElementRead | None:
         stmt = (

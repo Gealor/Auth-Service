@@ -1,7 +1,8 @@
 from repositories.access_rules_repository import AccessRulesRepository
 from repositories.role_repository import RoleRepository
 from schemas.exceptions.roles import RoleNotFoundException, RuleNotFoundException
-from schemas.role_schemas import AccessRoleRuleUpdate
+from schemas.response_schemas import ResponseSchema
+from schemas.role_schemas import AccessRoleRuleCreate, AccessRoleRuleUpdate
 
 
 class PermissionService:
@@ -24,3 +25,17 @@ class PermissionService:
         if updated_rule is None:
             raise RuleNotFoundException
         return updated_rule
+    
+
+    async def add_access_rule(self, rule_data: AccessRoleRuleCreate) -> ResponseSchema:
+        await self.rule_repo.create_rule(rule_data)
+        return ResponseSchema(msg = "Rule successfully created")
+
+
+    async def remove_access_rule(self, rule_id: int) -> ResponseSchema:
+        existing_rule = await self.rule_repo.get_rules_by_id(rule_id)
+        if not existing_rule:
+            raise RuleNotFoundException
+            
+        await self.rule_repo.delete_rule(rule_id)
+        return ResponseSchema(msg = f"Rule {rule_id} successfully deleted")

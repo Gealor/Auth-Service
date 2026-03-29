@@ -10,6 +10,10 @@ class BusinessElementSchemaBase(BaseModel):
 class BusinessElementRead(BusinessElementSchemaBase):
     id: int = Field(examples=[1, 2, 3])
 
+class ListBusinessElementsRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    elements: list[BusinessElementRead]
 
 class BusinessElementCreate(BusinessElementSchemaBase):
     pass
