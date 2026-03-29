@@ -62,7 +62,7 @@ class AccessRulesRepository:
         self,
         rule_id: int,
         update_data: AccessRoleRuleUpdate
-    ) -> AccessRoleRuleSchemaBase:
+    ) -> AccessRoleRuleSchemaBase | None:
         dict_data = update_data.model_dump(exclude_none=True)
         if not dict_data:
             log.warning("There are no new parameters to update")
@@ -74,6 +74,9 @@ class AccessRulesRepository:
         )
 
         rule = await self.db_session.scalar(stmt)
+        if rule is None:
+            return None
+
         try:
             await self.db_session.commit()
         except IntegrityError as e:

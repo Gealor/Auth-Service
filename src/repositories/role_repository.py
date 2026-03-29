@@ -41,7 +41,7 @@ class RoleRepository:
             ).where(Role.id == role_id)
         )
 
-        result = self.db_session.scalar(stmt)
+        result = await self.db_session.scalar(stmt)
         if result is None:
             return None
         
