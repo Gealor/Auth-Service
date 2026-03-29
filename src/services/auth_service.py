@@ -1,10 +1,7 @@
-import hashlib
-
-import jwt
 from pydantic import EmailStr
 
 from core.auth.creation_tokens import create_access_token, create_refresh_token
-from core.auth.passwords import compare_hashed_passwords, hash_password
+from core.auth.passwords import compare_hashed_passwords
 from core.auth.tokens import compare_hashed_tokens, hash_tokens
 from core.logger import log
 from repositories.role_repository import RoleRepository
