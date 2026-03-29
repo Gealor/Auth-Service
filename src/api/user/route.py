@@ -10,7 +10,7 @@ from schemas.user_schemas import UserInfo, UserInfoForAdmin, UserRead, UserUpdat
 from services.user_service import UserService
 
 
-router = APIRouter(prefix="/user", tags=["JWT"])
+router = APIRouter(prefix="/user")
 
 @router.get("/me")
 async def read_me(
