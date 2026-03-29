@@ -1,3 +1,5 @@
+from typing import Literal
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 import jwt
@@ -95,7 +97,15 @@ async def get_current_user_for_refresh(
 
 
 class PermissionChecker:
-    def __init__(self, element_name: str, action: str):
+    '''
+    Class-dependency for permission check.
+    The class is attached as a dependency to the endpoint, and the name and action for which permission is required are specified for it.
+    
+    Args: 
+        element_name (str): the name of the business element that needs the right to act, which can be found in the business_elements database
+        action (Literal["read", "update", "create", "delete"]): the action that is allowed to be performed with an element named element_name
+    '''
+    def __init__(self, element_name: str, action: Literal["read", "update", "create", "delete"]):
         self.element_name = element_name
         self.action = action 
 
