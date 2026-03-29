@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from core.auth.security import PermissionChecker, get_current_user
 from core.database import db_session_getter
+from core.logger import log
 from schemas.exceptions.users import UserNotDeletedException, UserNotFoundException
 from schemas.response_schemas import ResponseSchema
 from schemas.role_schemas import AccessRoleRuleRead
@@ -36,6 +37,7 @@ async def update_my_profile(
             detail="User not found"
         )
     except Exception as e:
+        log.error("Unexpected error: %s", e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
             detail="Unexpected error"
@@ -52,6 +54,7 @@ async def delete_my_account(
     try:
         result = await UserService(db_session=db).delete_self_user(user_id=current_user.id)
     except Exception as e:
+        log.error("Unexpected error: %s", e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
             detail="Unexpected error"
@@ -77,6 +80,7 @@ async def restore_user(
             detail="User not deleted"
         )
     except Exception as e:
+        log.error("Unexpected error: %s", e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
             detail="Unexpected error"
