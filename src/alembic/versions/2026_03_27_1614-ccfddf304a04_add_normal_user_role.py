@@ -28,9 +28,9 @@ def upgrade() -> None:
     role_id = res.scalar()
     
     res = conn.execute(
-        sa.text("SELECT id FROM business_elements WHERE name='users'")
+        sa.text("SELECT id FROM business_elements WHERE name IN ('users', 'products')")
     )
-    element_id = res.scalar()
+    elements_id = res.scalars().all()
 
     insert_rules_stmt = sa.text("""
         INSERT INTO access_roles_rules (
@@ -45,8 +45,25 @@ def upgrade() -> None:
         )
     """)
     conn.execute(
-        insert_rules_stmt,[{"role_id": role_id, "element_id": element_id}]
+        insert_rules_stmt,[{"role_id": role_id, "element_id": elements_id[0]}]
     )
+
+    insert_rules_stmt = sa.text("""
+        INSERT INTO access_roles_rules (
+            role_id, element_id, 
+            read_permission, read_all_permission, 
+            create_permission, 
+            update_permission, update_all_permission, 
+            delete_permission, delete_all_permission
+        ) VALUES (
+            :role_id, :element_id, 
+            false, false, true, false, false, true, false
+        )
+    """)
+    conn.execute(
+        insert_rules_stmt,[{"role_id": role_id, "element_id": elements_id[1]}]
+    )
+    
 
 def downgrade() -> None:
     """Downgrade schema."""

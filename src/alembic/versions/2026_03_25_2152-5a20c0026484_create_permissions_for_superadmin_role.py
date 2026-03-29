@@ -26,7 +26,7 @@ def upgrade() -> None:
     res = conn.execute(
         sa.text("""
             INSERT INTO business_elements (name) 
-            VALUES ('users'), ('roles'), ('permissions')
+            VALUES ('users'), ('roles'), ('permissions'), ('products')
             RETURNING id
         """)
     )
@@ -59,6 +59,6 @@ def downgrade() -> None:
     conn = op.get_bind()
 
     conn.execute(
-        sa.text("DELETE FROM business_elements WHERE name IN ('users', 'roles', 'permissions')")
+        sa.text("DELETE FROM business_elements WHERE name IN ('users', 'roles', 'permissions', 'products')")
     )
 
