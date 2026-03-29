@@ -65,8 +65,16 @@ async def delete_my_account(
 @router.patch("/restore")
 async def restore_user(
     user_id: int,
-    db = Depends(db_session_getter)
+    current_user: UserInfoForAdmin = Depends(get_current_user),
+    rule: AccessRoleRuleRead = Depends(PermissionChecker("users", "update")),
+    db = Depends(db_session_getter),
 ) -> ResponseSchema:
+    if user_id != current_user.id and not rule.update_all_permission:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have permission to restore other users",
+        )
+    
     try:
         result = await UserService(db_session=db).restore_deleted_user(user_id=user_id)
     except UserNotFoundException:
