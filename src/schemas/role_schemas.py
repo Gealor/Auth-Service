@@ -90,3 +90,12 @@ class RoleUpdate(RoleBase):
 
 class RoleWithRules(RoleBase):
     rules: list[AccessRoleRuleRead]
+
+
+class RoleWithRulesAndID(RoleWithRules):
+    id: int
+
+class ListRoleWithRules(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    roles: list[RoleWithRulesAndID]

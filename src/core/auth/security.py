@@ -125,7 +125,7 @@ class PermissionChecker:
         target_rule = self._found_target_rule(current_user)
 
         if not target_rule:
-            log.error("Not found '%s' element for role %s", self.element_name, current_user.role)
+            log.error("Not found '%s' element for role %s", self.element_name, current_user.role.name)
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied to this module")
 
         # Проверка флагов (например, update_permission или update_all_permission)

@@ -5,12 +5,25 @@ from sqlalchemy.orm import selectinload
 
 from models.role import AccessRoleRule, Role
 from schemas.exceptions.database import DatabaseException
-from schemas.role_schemas import RoleCreate, RoleRead, RoleUpdate, RoleWithRules
+from schemas.role_schemas import ListRoleWithRules, RoleCreate, RoleRead, RoleUpdate, RoleWithRules, RoleWithRulesAndID
 from core.logger import log
 
 class RoleRepository:
     def __init__(self, db_session: AsyncSession):
         self.db_session = db_session
+
+
+    async def get_all_roles_and_his_rules(self, page: int, per_page: int = 10) -> ListRoleWithRules:
+        stmt = (
+            select(Role)
+            .options(
+                selectinload(Role.rules).joinedload(AccessRoleRule.element)
+            ).order_by(Role.id).offset((page-1)*per_page).limit(per_page)
+        )
+
+        result = (await self.db_session.scalars(stmt)).all()
+        list_results = [RoleWithRulesAndID.model_validate(role) for role in result]
+        return ListRoleWithRules(roles = list_results)
 
     
     async def get_role_by_name(self, name: str) -> RoleRead | None:
