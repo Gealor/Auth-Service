@@ -3,7 +3,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 import jwt
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.auth.creation_tokens import ACCESS_TOKEN_TYPE, decode_jwt
+from core.auth.creation_tokens import ACCESS_TOKEN_TYPE, REFRESH_TOKEN_TYPE, decode_jwt
 from core.logger import log
 from core.database import db_session_getter
 from repositories.user_repository import UserRepository
@@ -51,6 +51,47 @@ async def get_current_user(
             detail="The user was not found or deleted"
         )
     return user
+
+
+async def get_current_user_for_refresh(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: AsyncSession = Depends(db_session_getter)
+) -> tuple[UserInfoForAdmin, str]:
+    token = credentials.credentials
+    try:
+        payload = decode_jwt(token)
+        type_token = payload.get("type")
+        
+        if type_token != REFRESH_TOKEN_TYPE:
+            log.error("A refresh token was expected, got %s", type_token)
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, 
+                detail="A refresh token was expected, and a different type of token was received"
+            )
+            
+        user_id_str: str | None = payload.get("sub")
+        if not user_id_str:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+            
+        user_id = int(user_id_str)
+        
+    except jwt.PyJWTError as e:
+        log.error("Error decode token: %s", e)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, 
+            detail="Invalid or expired token"
+        )
+
+    user = await UserRepository(db_session=db).get_user_with_role(user_id=user_id)
+
+    if not user or not user.is_active:
+        log.error("User with id=%d is not active or not exist", user_id)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, 
+            detail="The user was not found or deleted"
+        )
+        
+    return user, token
 
 
 class PermissionChecker:
