@@ -3,7 +3,6 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from core.auth.security import get_current_user, get_current_user_for_refresh
 from core.database import db_session_getter
 from core.logger import log
-from schemas.exceptions.database import DatabaseException
 from schemas.exceptions.roles import RoleNotFoundException
 from schemas.exceptions.security import PasswordsNotMatchException, UserEmailAlreadyExistsException, UserNotActiveException
 from schemas.exceptions.token import RefreshTokenBaseException
