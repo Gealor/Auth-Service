@@ -5,7 +5,7 @@ from core.database import db_session_getter
 from schemas.exceptions.users import UserNotDeletedException, UserNotFoundException
 from schemas.response_schemas import ResponseSchema
 from schemas.role_schemas import AccessRoleRuleRead
-from schemas.user_schemas import UserInfoForAdmin, UserRead, UserUpdate
+from schemas.user_schemas import UserInfo, UserInfoForAdmin, UserRead, UserUpdate
 from services.user_service import UserService
 
 
@@ -15,8 +15,8 @@ router = APIRouter(prefix="/user", tags=["JWT"])
 async def read_me(
     current_user: UserInfoForAdmin = Depends(get_current_user),
     rule: AccessRoleRuleRead = Depends(PermissionChecker("users", "read")),
-) -> UserInfoForAdmin:
-    return current_user
+) -> UserInfo:
+    return UserInfo.model_validate(current_user)
 
 @router.patch("/update/me")
 async def update_my_profile(

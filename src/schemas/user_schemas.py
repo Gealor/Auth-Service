@@ -49,11 +49,16 @@ class UserDelete(BaseModel):
 class UserChangePassword(BaseModel):
     password: str = Field(examples=["ivan_craft7869"])
 
-class UserInfoForAdmin(UserRegister):
+
+class UserInfo(UserRead):
+    role: RoleWithRules
+
+class UserInfoForAdmin(UserRegister, UserRead):
     is_active: bool = Field(examples=[True, False])
 
     id: int
     role: RoleWithRules
+    
 
 
 # Auth
