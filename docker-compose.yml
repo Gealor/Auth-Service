@@ -13,9 +13,9 @@ services:
   db:
     image: postgres
     env_file:
-      - ./src/.env
+      - .env
     ports:
-      - 7000:5432
+      - 7000:${PGPORT}
     volumes:
     - auth_bd_data:/var/lib/postgresql/data
     networks:

@@ -8,8 +8,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 CERTS_PATH = BASE_DIR / "core" / "auth" / "certs"
-ENV_FILE = BASE_DIR / ".env"
-ENV_TEMPLATE = BASE_DIR / ".env.template"
+ENV_FILE = BASE_DIR.parent / ".env"
+ENV_TEMPLATE = BASE_DIR.parent / ".env.template"
 
 class RuntimeSettings(BaseModel):
     host: str = '0.0.0.0'
@@ -47,7 +47,7 @@ class DatabaseSettings(BaseSettings):
     db_user: Annotated[str, Field(alias="POSTGRES_USER")]
     db_password: Annotated[str, Field(alias="POSTGRES_PASSWORD")]
     db_host: str = Field(default="localhost", alias="POSTGRES_HOST")
-    db_port: int = Field(default=6000, alias="POSTGRES_PORT")
+    db_port: int = Field(default=6000, alias="PGPORT")
     db_echo: bool = False
 
     @property
