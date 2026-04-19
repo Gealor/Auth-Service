@@ -4,14 +4,49 @@
 2. Отсутствие CORS
 3. Отсутствие logging middleware
 4. Отсутствие rate limiting
+```псевдо-код для rate limiting с Redis и TTL
+redis_client = redis.from_url(
+    "redis://localhost:6379",
+    encoding="utf-8",
+    decode_responses=True
+)
+
+RATE_LIMIT = 5
+WINDOW = 60  # секунд
+
+
+@app.middleware("http")
+async def rate_limit_middleware(request: Request, call_next):
+    ip = request.client.host  # можно заменить на user_id
+    key = f"rate_limit:{ip}"
+
+    # увеличиваем счётчик
+    current = await redis_client.incr(key)
+
+    # если это первый запрос — ставим TTL
+    if current == 1:
+        await redis_client.expire(key, WINDOW)
+
+    if current > RATE_LIMIT:
+        ttl = await redis_client.ttl(key)
+
+        raise HTTPException(
+            status_code=429,
+            detail=f"Rate limit exceeded. Retry in {ttl} seconds"
+        )
+
+    response = await call_next(request)
+    return response
+```
+
 5. datetime.now(tz=UTC).replace(tzinfo=None) — костыль для удаления timezone в UserDelete схеме
 (5-ый пункт пофиксил, изменив в базе данных тип на DATETIME WITH TIMEZONE, и в UserDelete схеме изменил фабрику deleted_at на
-lambda: datetime.now(UTC), важное уточнение в базе данных время будет ХРАНИТЬСЯ в формате UTC с информацией о таймзоне, если смотреть по СУБД типо pgAdmin4, DBeaver и т.д. там время может ОТОБРАЖАТЬ время со смещением от UTC, но по факту мы будем получить время в формате UTC из ORM)
+lambda: datetime.now(UTC), важное уточнение в базе данных время будет ХРАНИТЬСЯ в формате UTC с информацией о таймзоне, если смотреть по СУБД типо pgAdmin4, DBeaver и т.д. там может ОТОБРАЖАТЬ время со смещением от UTC, но по факту мы будем получить время в формате UTC из ORM)
 
 # Инструкция по развертыванию
 
 ## 1. Создание .env файла
-Создайте в /src/ файл .env и скопируйте параметры из .env.template в новый файл. Если вы хотите задать свои данные для логина, пароля и имени базы данных, тогда поменяйте соответствующие поля POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB
+Создайте в корневой папке проекта файл .env и скопируйте параметры из .env.template в новый файл. Если вы хотите задать свои данные для логина, пароля и имени базы данных, тогда поменяйте соответствующие поля POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, PGPORT
 
 ## 2. Генерация приватного и публичного ключей
 Вводить команды в корневой папке проекта, не в src.
