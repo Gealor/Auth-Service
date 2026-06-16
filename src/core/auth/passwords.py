@@ -1,16 +1,15 @@
-import bcrypt
+from .bcrypt_hashing import hash_with_salt, compare_bytes_with_hash
 
 
-def hash_password(
+async def hash_password(
     password: str,
 ) -> bytes:
-    salt = bcrypt.gensalt()
     pwd_bytes: bytes = password.encode("utf-8")
-    return bcrypt.hashpw(pwd_bytes, salt)
+    return await hash_with_salt(pwd_bytes)
 
 
-def compare_hashed_passwords(
+async def compare_hashed_passwords(
     entered_password: bytes,
     hashed_password: bytes,
 ) -> bool:
-    return bcrypt.checkpw(entered_password, hashed_password)
+    return await compare_bytes_with_hash(entered_password, hashed_password)

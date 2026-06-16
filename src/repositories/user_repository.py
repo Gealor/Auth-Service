@@ -70,7 +70,7 @@ class UserRepository:
             last_name = user_data.last_name,
             patronymic = user_data.patronymic,
             email = user_data.email,
-            password = hash_password(user_data.password).decode("utf-8"),
+            password = (await hash_password(user_data.password)).decode("utf-8"),
             role_id = base_role_id,
             is_active = True,
         )

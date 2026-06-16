@@ -15,7 +15,7 @@ services:
     env_file:
       - .env
     ports:
-      - 7000:${PGPORT}
+      - 7000:${PGPORT} # замечание: чтобы docker-compose увидел переменную PGPORT, нужно указать ее в файле .env, который должен находиться в той же папке, что и docker-compose.yml
     volumes:
     - auth_bd_data:/var/lib/postgresql/data
     networks:

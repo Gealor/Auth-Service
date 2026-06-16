@@ -25,7 +25,7 @@ class AuthService:
 
     async def _save_refresh_token(self, user_id: int, refresh_token: str):
         # Хэш токена перед сохранением в БД (как пароль)
-        token_hash = hash_tokens(refresh_token).decode("utf-8")
+        token_hash = (await hash_tokens(refresh_token)).decode("utf-8")
         
         existing_token = await self.token_repo.get_token_by_user_id(user_id)
         if existing_token:
@@ -71,7 +71,7 @@ class AuthService:
             log.error("User by email %s not found", email)
             raise UserNotFoundException
         
-        is_valid = compare_hashed_passwords(
+        is_valid = await compare_hashed_passwords(
             entered_password=password.encode("utf-8"),
             hashed_password=user.password.encode("utf-8"),
         )
@@ -117,7 +117,7 @@ class AuthService:
             log.error("Refresh token not found in DB for user_id=%d", user.id)
             raise TokenMismatchException
 
-        is_valid = compare_hashed_tokens(
+        is_valid = await compare_hashed_tokens(
             raw_token=raw_refresh_token.encode("utf-8"),
             hashed_token=db_token_hash.encode("utf-8")
         )
